@@ -1,0 +1,57 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0a0a;
+  --bg2: #111111;
+  --bg3: #1a1a1a;
+  --bg4: #222222;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text: #f0f0f0;
+  --text2: #888888;
+  --text3: #555555;
+  --accent: #e8ff47;
+  --accent-dim: rgba(232,255,71,0.12);
+  --accent-dim2: rgba(232,255,71,0.06);
+  --good: #4ade80;
+  --good-dim: rgba(74,222,128,0.1);
+  --warn: #fb923c;
+  --warn-dim: rgba(251,146,60,0.1);
+  --info: #60a5fa;
+  --info-dim: rgba(96,165,250,0.1);
+  --mono: 'DM Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+}
+
+html { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 15px; line-height: 1.6; }
+
+body { min-height: 100vh; background: var(--bg); }
+
+input[type="text"] {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+}
+input[type="text"]:focus { border-color: var(--accent); }
+input[type="text"]::placeholder { color: var(--text3); }
+
+button {
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 6px;
+  border: none;
+  transition: all 0.15s;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
