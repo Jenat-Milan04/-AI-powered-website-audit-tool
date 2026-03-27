@@ -1,4 +1,4 @@
-# Website Audit Tool
+# AI-Powered Website Audit Tool
 
 An AI-powered website audit tool built for EIGHT25MEDIA's internal tooling evaluation. Accepts a single URL, extracts factual metrics, and uses **Google Gemini AI** to generate structured SEO and CRO insights.
 
@@ -9,7 +9,7 @@ An AI-powered website audit tool built for EIGHT25MEDIA's internal tooling evalu
 ### Run locally
 
 ```bash
-git clone https://github.com/yourusername/website-audit-tool
+git clone https://github.com/Jenat-Milan04/website-audit-tool
 cd website-audit-tool
 npm install
 cp .env.example .env
@@ -22,7 +22,7 @@ Open [http://localhost:5173](http://localhost:5173)
 ### Environment variables
 
 ```
-VITE_ANTHROPIC_API_KEY=sk-ant-...
+GEMINI_API_KEY=AIz....
 ```
 
 ---
