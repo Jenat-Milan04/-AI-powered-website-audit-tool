@@ -4,7 +4,12 @@ An AI-powered website audit tool built for EIGHT25MEDIA's internal tooling evalu
 
 ---
 
-## Live Demo / Setup
+## Live Demo / Deployed Link
+
+You can access the fully deployed AI-Powered Website Audit Tool here:
+
+https://ai-powered-website-audit-tool-psi.vercel.app/
+
 
 ### Run locally
 

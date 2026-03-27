@@ -2,7 +2,7 @@
 
 // src/scraper.js
 // src/scraper.js
-const API_BASE = "https://<your-render-backend>.onrender.com"; // <-- Replace with your Render URL
+const API_BASE = "https://ai-powered-website-audit-tool.onrender.com"; // <-- Replace with your Render URL
 
 export async function fetchHTML(url) {
   try {

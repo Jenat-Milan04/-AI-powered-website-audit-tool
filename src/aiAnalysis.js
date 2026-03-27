@@ -101,7 +101,7 @@ export async function runAIAnalysis(metrics) {
   }
 
   try {
-    const BACKEND_URL = 'http://localhost:3000';
+    const BACKEND_URL = 'https://ai-powered-website-audit-tool.onrender.com';
     
     console.log('Sending request to backend:', `${BACKEND_URL}/analyze`);
     
@@ -200,6 +200,16 @@ export async function runAIAnalysis(metrics) {
   }
 }
 
+const { result, promptLog: log } = await runAIAnalysis(m);
+
+// Save AI result
+setAiResult(result);
+
+// Save prompt log for display/export
+setPromptLog(log);
+
+// Log it for developer/debug purposes
+console.log('📜 Prompt Log:', log);
 
 // Add this at the very end of aiAnalysis.js
 

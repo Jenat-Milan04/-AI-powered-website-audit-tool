@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { fetchHTML, extractMetrics } from './scraper'
-import { runAIAnalysis } from './aiAnalysis'
+import { runAIAnalysis, getPromptTemplates } from './aiAnalysis'
 import styles from './App.module.css'
 import Splash from './splash'
 
@@ -118,54 +118,60 @@ export default function App() {
     setStep('analyzing')
     console.log('Step 3: Starting AI analysis...')
     try {
-      const { result, promptLog: log } = await runAIAnalysis(m);
-      console.log('✅ AI analysis successful:', result)
-      
-      if (result && result.summary && result.score !== undefined) {
-        setAiResult(result);
-        setStep('done');
-        console.log('🎉 Audit completed successfully!')
-      } else {
-        console.warn('⚠️ AI result missing required fields, using fallback')
-        setAiResult({
-          summary: "Analysis completed with limited data",
-          score: 50,
-          insights: [{ 
-            category: "Info", 
-            status: "warning", 
-            headline: "Partial Analysis", 
-            text: "The AI response was incomplete. Please try again." 
-          }],
-          recommendations: [{ 
-            priority: 1, 
-            impact: "medium", 
-            title: "Try Again", 
-            text: "Please run the audit again for complete results." 
-          }]
-        });
-        setStep('done');
-      }
-      
-      setPromptLog(log);
+  const { result, promptLog: log } = await runAIAnalysis(m);
+  console.log('✅ AI analysis successful:', result);
+  console.log('📜 Prompt Log / Reasoning Trace:', log);
+
+  // Set AI result
+  if (result && result.summary && result.score !== undefined) {
+    setAiResult(result);
+    setStep('done');
+    console.log('🎉 Audit completed successfully!');
+  } else {
+    console.warn('⚠️ AI result missing required fields, using fallback');
+    setAiResult({
+      summary: "Analysis completed with limited data",
+      score: 50,
+      insights: [{ 
+        category: "Info", 
+        status: "warning", 
+        headline: "Partial Analysis", 
+        text: "The AI response was incomplete. Please try again." 
+      }],
+      recommendations: [{ 
+        priority: 1, 
+        impact: "medium", 
+        title: "Try Again", 
+        text: "Please run the audit again for complete results." 
+      }]
+    });
+    setStep('done');
+  }
+
+  // Always set prompt log
+  setPromptLog(log);
+
     } catch (e) {
       console.error('❌ AI analysis error:', e);
       console.error('Error details:', e.message);
-      if (e.promptLog) {
-        console.log('Prompt log available:', e.promptLog);
+
+      // Save prompt log if available
+      const log = e.promptLog || null;
+      if (log) {
+        console.log('📜 Prompt log available from error:', log);
+        setPromptLog(log);
       }
-      
+
+      // Use fallback if provided
       if (e.fallback) {
-        console.log('Using fallback result from error')
+        console.log('⚠️ Using fallback result from error');
         setAiResult(e.fallback);
         setStep('done');
       } else {
         setError(`AI analysis failed: ${e.message}`);
         setStep('error');
       }
-      
-      if (e.promptLog) setPromptLog(e.promptLog);
     }
-  }
 
   const stepLabel = {
     fetching: 'Fetching page via proxy...',
