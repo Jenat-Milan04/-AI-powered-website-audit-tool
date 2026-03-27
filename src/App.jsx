@@ -177,10 +177,12 @@ export default function App() {
     return <Splash onFinish={() => setShowSplash(false)} />
   }
 
- return (
+return (
   <div className={styles.app}>
-    <header className={styles.header}>
-      <div className={styles.headerInner}>
+    <main className={styles.main}>
+
+      {/* Glass card: title + input only */}
+      <div className={styles.glassCard}>
         <div className={styles.logoContainer}>
           <div className={styles.logo}>
             <span className={styles.logoDot}></span>
@@ -188,51 +190,47 @@ export default function App() {
           </div>
           <p className={styles.headerSub}>AI-powered website audit — by JENAT MILAN</p>
         </div>
-      </div>
-    </header>
 
-    <main className={styles.main}>
-      {/* Input */}
-      <div className={styles.inputSection}>
-        <div className={styles.urlRow}>
-          <input
-            type="text"
-            value={url}
-            onChange={e => setUrl(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleAudit()}
-            placeholder="https://yourwebsite.com"
-            className={styles.urlInput}
-            disabled={['fetching','extracting','analyzing'].includes(step)}
-          />
-          <button
-            className={styles.auditBtn}
-            onClick={handleAudit}
-            disabled={['fetching','extracting','analyzing'].includes(step) || backendStatus === 'disconnected'}
-          >
-            {['fetching','extracting','analyzing'].includes(step) ? 'Auditing...' : 'Run audit →'}
-          </button>
+        <div className={styles.inputSection}>
+          <div className={styles.urlRow}>
+            <input
+              type="text"
+              value={url}
+              onChange={e => setUrl(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleAudit()}
+              placeholder="https://website.com"
+              className={styles.urlInput}
+              disabled={['fetching','extracting','analyzing'].includes(step)}
+            />
+            <button
+              className={styles.auditBtn}
+              onClick={handleAudit}
+              disabled={['fetching','extracting','analyzing'].includes(step) || backendStatus === 'disconnected'}
+            >
+              {['fetching','extracting','analyzing'].includes(step) ? 'Auditing...' : 'Run audit →'}
+            </button>
+          </div>
+          {backendStatus === 'disconnected' && (
+            <div className={styles.warningBox}>
+              ⚠️ Backend server not running. Please run <code>node server.js</code> in another terminal.
+            </div>
+          )}
         </div>
-        {backendStatus === 'disconnected' && (
-          <div className={styles.warningBox}>
-            ⚠️ Backend server not running. Please run <code>node server.js</code> in another terminal.
+
+        {stepLabel && (
+          <div className={styles.statusBar}>
+            <span className={styles.spinner} />
+            {stepLabel}
           </div>
         )}
+
+        {error && <div className={styles.errorBar}>{error}</div>}
       </div>
+      {/* End glass card */}
 
-      {/* Status */}
-      {stepLabel && (
-        <div className={styles.statusBar}>
-          <span className={styles.spinner} />
-          {stepLabel}
-        </div>
-      )}
-
-      {error && <div className={styles.errorBar}>{error}</div>}
-
-      {/* Results */}
+      {/* Results sit outside the glass card */}
       {metrics && (
-        <div className={styles.results}>
-          {/* Score */}
+         <div className={`${styles.results} ${styles.glassCard}`}>
           {aiResult && (
             <div className={styles.scoreRow}>
               <div className={styles.scoreCircle}>
@@ -259,7 +257,6 @@ export default function App() {
 
           <div className={styles.divider} />
 
-          {/* Factual Metrics */}
           <div className={styles.sectionLabel}>
             <span className={styles.sectionDot} />
             Factual metrics
@@ -299,7 +296,6 @@ export default function App() {
             )}
           </div>
 
-          {/* AI Insights */}
           {aiResult && aiResult.insights && (
             <>
               <div className={styles.divider} />
@@ -346,6 +342,7 @@ export default function App() {
           )}
         </div>
       )}
+
     </main>
   </div>
 )

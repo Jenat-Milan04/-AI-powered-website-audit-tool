@@ -58,7 +58,7 @@ GEMINI_API_KEY=AIz....
 ```
 src/
 ├── scraper.js       # HTML fetching + DOM metric extraction (no AI)
-├── aiAnalysis.js    # Claude API call, prompt construction, prompt logs
+├── aiAnalysis.js    # gemini API call, prompt construction, prompt logs
 ├── App.jsx          # React UI — renders all three output sections
 ├── App.module.css   # Scoped CSS module
 └── index.css        # Global reset + CSS variables
@@ -71,7 +71,7 @@ src/
 ## AI Design Decisions
 
 ### 1. Structured JSON output
-The system prompt instructs Claude to respond only with valid JSON matching a precise schema. This makes the response deterministic and immediately renderable — no parsing heuristics needed.
+The system prompt instructs gemini to respond only with valid JSON matching a precise schema. This makes the response deterministic and immediately renderable — no parsing heuristics needed.
 
 ### 2. Metrics-grounded prompting
 All extracted metrics are injected verbatim into the user prompt. The system prompt explicitly requires that every insight reference specific numbers. This prevents generic AI responses like "consider improving your SEO" and produces specific findings like "your 0 H1 tags will hurt crawlability."
