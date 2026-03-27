@@ -1,10 +1,13 @@
 // scraper.js - Updated to use backend proxy
 
 // src/scraper.js
+// src/scraper.js
+const API_BASE = "https://<your-render-backend>.onrender.com"; // <-- Replace with your Render URL
+
 export async function fetchHTML(url) {
   try {
-    // Use your backend proxy
-    const response = await fetch('http://localhost:3000/fetch-page', {
+    // Call the deployed backend on Render
+    const response = await fetch(`${API_BASE}/fetch-page`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
