@@ -96,7 +96,7 @@ The page's text content is truncated to 3,000 characters and sent alongside the 
 |---|---|
 | Client-side scraping via CORS proxy | Simple to deploy, no server needed. But sites that block the proxy will fail. A server-side scraper (Puppeteer, Playwright) would be more reliable. |
 | DOMParser for metric extraction | Works in the browser with zero dependencies. But JS-rendered content won't be parsed — a headless browser would capture dynamic pages. |
-| Anthropic API called from browser | No backend required. In production, this should be proxied through a backend to protect the API key. |
+| Gemini API called via backend proxy | API key is kept server-side. In production, add rate limiting and authentication to the proxy. |
 | Single-page only | Per spec. Multi-page crawling would require a queue system and backend. |
 | allorigins.win proxy | Free and works for most public pages. For production, use a self-hosted proxy or server-side scraping. |
 
