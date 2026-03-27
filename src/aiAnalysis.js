@@ -199,21 +199,6 @@ export async function runAIAnalysis(metrics) {
     };
   }
 }
-
-const { result, promptLog: log } = await runAIAnalysis(m);
-
-// Save AI result
-setAiResult(result);
-
-// Save prompt log for display/export
-setPromptLog(log);
-
-// Log it for developer/debug purposes
-console.log('📜 Prompt Log:', log);
-
-// Add this at the very end of aiAnalysis.js
-
-// Export for UI to display prompt structure
 export function getPromptTemplates() {
   return {
     systemPrompt: SYSTEM_PROMPT,
