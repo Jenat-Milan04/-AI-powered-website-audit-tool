@@ -164,7 +164,7 @@ export default function App() {
   const stepLabel = {
     fetching: 'Fetching page via proxy...',
     extracting: 'Extracting metrics from HTML...',
-    analyzing: 'Sending to Gemini for AI analysis...',
+    analyzing: 'Sending to AI for analysis...',
   }[step] || ''
 
   return (
@@ -173,20 +173,9 @@ export default function App() {
         <div className={styles.headerInner}>
           <div className={styles.logo}>
             <span className={styles.logoDot} />
-            <span>auditly</span>
+            <span>Auditly</span>
           </div>
-          <p className={styles.headerSub}>AI-powered website audit — by EIGHT25MEDIA</p>
-          {backendStatus && (
-            <div className={styles.backendStatus}>
-              {backendStatus === 'connected' ? (
-                <span className={styles.statusConnected}>● Backend connected</span>
-              ) : backendStatus === 'disconnected' ? (
-                <span className={styles.statusDisconnected}>● Backend not reachable (run: node server.js)</span>
-              ) : (
-                <span className={styles.statusError}>● Backend error</span>
-              )}
-            </div>
-          )}
+          <p className={styles.headerSub}>AI-powered website audit — by Jenat Milan</p>
         </div>
       </header>
 

@@ -227,6 +227,6 @@ export function getPromptTemplates() {
       contentSnippet: "This is an example content snippet for demonstration purposes...",
       scrapedAt: new Date().toISOString()
     }),
-    buildUserPrompt: buildUserPrompt // Export the function itself
+    buildUserPrompt: buildUserPrompt
   };
 }
