@@ -287,17 +287,31 @@ export default function App() {
                 {showLog && (
                   <div className={styles.promptLog}>
                     <div className={styles.promptBlock}>
-                      <div className={styles.promptLabel}>System prompt</div>
+                      <div className={styles.promptLabel}>🕐 Timestamp</div>
+                      <pre className={styles.promptPre}>{promptLog.timestamp}</pre>
+                    </div>
+                    <div className={styles.promptBlock}>
+                      <div className={styles.promptLabel}>⚙️ System prompt — instructions sent to AI</div>
                       <pre className={styles.promptPre}>{promptLog.systemPrompt}</pre>
                     </div>
                     <div className={styles.promptBlock}>
-                      <div className={styles.promptLabel}>User prompt (with injected metrics)</div>
+                      <div className={styles.promptLabel}>📤 User prompt — website metrics &amp; content sent</div>
                       <pre className={styles.promptPre}>{promptLog.userPrompt}</pre>
                     </div>
                     <div className={styles.promptBlock}>
-                      <div className={styles.promptLabel}>Raw model output</div>
+                      <div className={styles.promptLabel}>📥 Raw response — data returned from AI backend</div>
                       <pre className={styles.promptPre}>{promptLog.rawResponse ?? '(none)'}</pre>
                     </div>
+                    <div className={styles.promptBlock}>
+                      <div className={styles.promptLabel}>✅ Parsed output — structured JSON used by frontend</div>
+                      <pre className={styles.promptPre}>{promptLog.parsedOutput ? JSON.stringify(promptLog.parsedOutput, null, 2) : '(none)'}</pre>
+                    </div>
+                    {promptLog.error && (
+                      <div className={styles.promptBlock}>
+                        <div className={`${styles.promptLabel} ${styles.promptLabelError}`}>❌ Error</div>
+                        <pre className={`${styles.promptPre} ${styles.promptPreError}`}>{promptLog.error}</pre>
+                      </div>
+                    )}
                   </div>
                 )}
               </>

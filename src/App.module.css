@@ -511,6 +511,10 @@
   border-bottom: 1px solid var(--border);
   background: var(--bg3);
 }
+.promptLabelError {
+  color: #f87171;
+  background: rgba(239,68,68,0.08);
+}
 .promptPre {
   font-family: var(--mono);
   font-size: 11px;
@@ -522,6 +526,9 @@
   max-height: 300px;
   overflow-y: auto;
   line-height: 1.6;
+}
+.promptPreError {
+  color: #f87171;
 }
 
 .logBox {
