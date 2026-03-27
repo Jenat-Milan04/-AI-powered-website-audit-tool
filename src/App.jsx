@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { fetchHTML, extractMetrics } from './scraper'
 import { runAIAnalysis } from './aiAnalysis'
 import styles from './App.module.css'
+import Splash from './splash'
 
 const STEPS = ['idle', 'fetching', 'extracting', 'analyzing', 'done', 'error']
 
@@ -42,6 +43,14 @@ export default function App() {
   const [error, setError] = useState('')
   const [showLog, setShowLog] = useState(false)
   const [backendStatus, setBackendStatus] = useState(null)
+  const [showSplash, setShowSplash] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSplash(false)
+    }, 2000)
+    return () => clearTimeout(timer)
+  }, [])
 
   // Check backend connection on load
   useEffect(() => {
@@ -112,14 +121,12 @@ export default function App() {
       const { result, promptLog: log } = await runAIAnalysis(m);
       console.log('✅ AI analysis successful:', result)
       
-      // Check if result has the required structure
       if (result && result.summary && result.score !== undefined) {
         setAiResult(result);
         setStep('done');
         console.log('🎉 Audit completed successfully!')
       } else {
         console.warn('⚠️ AI result missing required fields, using fallback')
-        // Use fallback if structure is invalid
         setAiResult({
           summary: "Analysis completed with limited data",
           score: 50,
@@ -147,7 +154,6 @@ export default function App() {
         console.log('Prompt log available:', e.promptLog);
       }
       
-      // Check if we have a fallback in the error
       if (e.fallback) {
         console.log('Using fallback result from error')
         setAiResult(e.fallback);
@@ -164,199 +170,183 @@ export default function App() {
   const stepLabel = {
     fetching: 'Fetching page via proxy...',
     extracting: 'Extracting metrics from HTML...',
-    analyzing: 'Sending to AI for analysis...',
+    analyzing: 'Running AI analysis...',
   }[step] || ''
 
-  return (
-    <div className={styles.app}>
-      <header className={styles.header}>
-        <div className={styles.headerInner}>
-          <div className={styles.logo}>
-            <span className={styles.logoDot} />
-            <span>Auditly</span>
-          </div>
-          <p className={styles.headerSub}>AI-powered website audit — by Jenat Milan</p>
-        </div>
-      </header>
+  if (showSplash) {
+    return <Splash onFinish={() => setShowSplash(false)} />
+  }
 
-      <main className={styles.main}>
-        {/* Input */}
-        <div className={styles.inputSection}>
-          <div className={styles.urlRow}>
-            <input
-              type="text"
-              value={url}
-              onChange={e => setUrl(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleAudit()}
-              placeholder="https://yourwebsite.com"
-              className={styles.urlInput}
-              disabled={['fetching','extracting','analyzing'].includes(step)}
-            />
-            <button
-              className={styles.auditBtn}
-              onClick={handleAudit}
-              disabled={['fetching','extracting','analyzing'].includes(step) || backendStatus === 'disconnected'}
-            >
-              {['fetching','extracting','analyzing'].includes(step) ? 'Auditing...' : 'Run audit →'}
-            </button>
+ return (
+  <div className={styles.app}>
+    <header className={styles.header}>
+      <div className={styles.headerInner}>
+        <div className={styles.logoContainer}>
+          <div className={styles.logo}>
+            <span className={styles.logoDot}></span>
+            <span className={styles.logoText}>Auditly</span>
           </div>
-          {backendStatus === 'disconnected' && (
-            <div className={styles.warningBox}>
-              ⚠️ Backend server not running. Please run <code>node server.js</code> in another terminal.
+          <p className={styles.headerSub}>AI-powered website audit — by JENAT MILAN</p>
+        </div>
+      </div>
+    </header>
+
+    <main className={styles.main}>
+      {/* Input */}
+      <div className={styles.inputSection}>
+        <div className={styles.urlRow}>
+          <input
+            type="text"
+            value={url}
+            onChange={e => setUrl(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleAudit()}
+            placeholder="https://yourwebsite.com"
+            className={styles.urlInput}
+            disabled={['fetching','extracting','analyzing'].includes(step)}
+          />
+          <button
+            className={styles.auditBtn}
+            onClick={handleAudit}
+            disabled={['fetching','extracting','analyzing'].includes(step) || backendStatus === 'disconnected'}
+          >
+            {['fetching','extracting','analyzing'].includes(step) ? 'Auditing...' : 'Run audit →'}
+          </button>
+        </div>
+        {backendStatus === 'disconnected' && (
+          <div className={styles.warningBox}>
+            ⚠️ Backend server not running. Please run <code>node server.js</code> in another terminal.
+          </div>
+        )}
+      </div>
+
+      {/* Status */}
+      {stepLabel && (
+        <div className={styles.statusBar}>
+          <span className={styles.spinner} />
+          {stepLabel}
+        </div>
+      )}
+
+      {error && <div className={styles.errorBar}>{error}</div>}
+
+      {/* Results */}
+      {metrics && (
+        <div className={styles.results}>
+          {/* Score */}
+          {aiResult && (
+            <div className={styles.scoreRow}>
+              <div className={styles.scoreCircle}>
+                <svg viewBox="0 0 80 80" className={styles.scoreRing}>
+                  <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="6" />
+                  <circle
+                    cx="40" cy="40" r="34" fill="none"
+                    stroke={aiResult.score >= 70 ? '#4ade80' : aiResult.score >= 40 ? '#fb923c' : '#f87171'}
+                    strokeWidth="6"
+                    strokeDasharray={`${(aiResult.score / 100) * 213.6} 213.6`}
+                    strokeLinecap="round"
+                    transform="rotate(-90 40 40)"
+                  />
+                </svg>
+                <div className={styles.scoreNum}>{aiResult.score}%</div>
+              </div>
+              <div className={styles.scoreMeta}>
+                <div className={styles.scoreLabel}>Page health score</div>
+                <div className={styles.scoreSummary}>{aiResult.summary}</div>
+                <div className={styles.scoreUrl}>{metrics.pageUrl}</div>
+              </div>
             </div>
           )}
+
+          <div className={styles.divider} />
+
+          {/* Factual Metrics */}
+          <div className={styles.sectionLabel}>
+            <span className={styles.sectionDot} />
+            Factual metrics
+            <span className={styles.sectionNote}>extracted from HTML — no AI</span>
+          </div>
+
+          <div className={styles.metricsGrid}>
+            <MetricCard value={metrics.words.toLocaleString()} label="Word count" />
+            <MetricCard value={metrics.h1} label="H1 headings" highlight={metrics.h1 !== 1} />
+            <MetricCard value={metrics.h2} label="H2 headings" />
+            <MetricCard value={metrics.h3} label="H3 headings" />
+            <MetricCard value={metrics.ctaCount} label="CTAs" highlight={metrics.ctaCount === 0} />
+            <MetricCard value={metrics.internal} label="Internal links" />
+            <MetricCard value={metrics.external} label="External links" />
+            <MetricCard value={metrics.imgCount} label="Images" />
+            <MetricCard value={`${metrics.missingAltPct}%`} label="Missing alt text" highlight={metrics.missingAltPct > 20} />
+          </div>
+
+          <div className={styles.metaBox}>
+            <div className={styles.metaRow}>
+              <span className={styles.metaKey}>Meta title</span>
+              <span className={styles.metaVal}>{metrics.metaTitle || <em>not found</em>}</span>
+            </div>
+            <div className={styles.metaRow}>
+              <span className={styles.metaKey}>Meta description</span>
+              <span className={styles.metaVal}>{metrics.metaDesc || <em>not found</em>}</span>
+            </div>
+            <div className={styles.metaRow}>
+              <span className={styles.metaKey}>Canonical</span>
+              <span className={styles.metaVal}>{metrics.canonical || <em>not found</em>}</span>
+            </div>
+            {metrics.ogTitle && (
+              <div className={styles.metaRow}>
+                <span className={styles.metaKey}>OG title</span>
+                <span className={styles.metaVal}>{metrics.ogTitle}</span>
+              </div>
+            )}
+          </div>
+
+          {/* AI Insights */}
+          {aiResult && aiResult.insights && (
+            <>
+              <div className={styles.divider} />
+              <div className={styles.sectionLabel}>
+                <span className={styles.sectionDot} style={{ background: 'var(--accent)' }} />
+                AI insights
+                <span className={styles.sectionNote}>generated by AI, grounded in metrics above</span>
+              </div>
+
+              <div className={styles.insightsList}>
+                {aiResult.insights.map((ins, i) => (
+                  <div key={i} className={styles.insightCard}>
+                    <div className={styles.insightHeader}>
+                      <StatusBadge status={ins.status} />
+                      <span className={styles.insightCat}>{ins.category}</span>
+                      <span className={styles.insightHeadline}>{ins.headline}</span>
+                    </div>
+                    <p className={styles.insightText}>{ins.text}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className={styles.divider} />
+              <div className={styles.sectionLabel}>
+                <span className={styles.sectionDot} style={{ background: '#60a5fa' }} />
+                Prioritised recommendations
+              </div>
+
+              <div className={styles.recList}>
+                {aiResult.recommendations.map((rec, i) => (
+                  <div key={i} className={styles.recItem}>
+                    <div className={styles.recNum}>{rec.priority}</div>
+                    <div className={styles.recBody}>
+                      <div className={styles.recTop}>
+                        <span className={styles.recTitle}>{rec.title}</span>
+                        <ImpactBadge impact={rec.impact} />
+                      </div>
+                      <p className={styles.recText}>{rec.text}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
-
-        {/* Status */}
-        {stepLabel && (
-          <div className={styles.statusBar}>
-            <span className={styles.spinner} />
-            {stepLabel}
-          </div>
-        )}
-
-        {error && <div className={styles.errorBar}>{error}</div>}
-
-        {/* Results */}
-        {metrics && (
-          <div className={styles.results}>
-
-            {/* Score */}
-            {aiResult && (
-              <div className={styles.scoreRow}>
-                <div className={styles.scoreCircle}>
-                  <svg viewBox="0 0 80 80" className={styles.scoreRing}>
-                    <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="6" />
-                    <circle
-                      cx="40" cy="40" r="34" fill="none"
-                      stroke={aiResult.score >= 70 ? '#4ade80' : aiResult.score >= 40 ? '#fb923c' : '#f87171'}
-                      strokeWidth="6"
-                      strokeDasharray={`${(aiResult.score / 100) * 213.6} 213.6`}
-                      strokeLinecap="round"
-                      transform="rotate(-90 40 40)"
-                    />
-                  </svg>
-                  <div className={styles.scoreNum}>{aiResult.score}</div>
-                </div>
-                <div className={styles.scoreMeta}>
-                  <div className={styles.scoreLabel}>Page health score</div>
-                  <div className={styles.scoreSummary}>{aiResult.summary}</div>
-                  <div className={styles.scoreUrl}>{metrics.pageUrl}</div>
-                </div>
-              </div>
-            )}
-
-            <div className={styles.divider} />
-
-            {/* Factual Metrics */}
-            <div className={styles.sectionLabel}>
-              <span className={styles.sectionDot} />
-              Factual metrics
-              <span className={styles.sectionNote}>extracted from HTML — no AI</span>
-            </div>
-
-            <div className={styles.metricsGrid}>
-              <MetricCard value={metrics.words.toLocaleString()} label="Word count" />
-              <MetricCard value={metrics.h1} label="H1 headings" highlight={metrics.h1 !== 1} />
-              <MetricCard value={metrics.h2} label="H2 headings" />
-              <MetricCard value={metrics.h3} label="H3 headings" />
-              <MetricCard value={metrics.ctaCount} label="CTAs" highlight={metrics.ctaCount === 0} />
-              <MetricCard value={metrics.internal} label="Internal links" />
-              <MetricCard value={metrics.external} label="External links" />
-              <MetricCard value={metrics.imgCount} label="Images" />
-              <MetricCard value={`${metrics.missingAltPct}%`} label="Missing alt text" highlight={metrics.missingAltPct > 20} />
-            </div>
-
-            <div className={styles.metaBox}>
-              <div className={styles.metaRow}>
-                <span className={styles.metaKey}>Meta title</span>
-                <span className={styles.metaVal}>{metrics.metaTitle || <em>not found</em>}</span>
-              </div>
-              <div className={styles.metaRow}>
-                <span className={styles.metaKey}>Meta description</span>
-                <span className={styles.metaVal}>{metrics.metaDesc || <em>not found</em>}</span>
-              </div>
-              <div className={styles.metaRow}>
-                <span className={styles.metaKey}>Canonical</span>
-                <span className={styles.metaVal}>{metrics.canonical || <em>not found</em>}</span>
-              </div>
-              {metrics.ogTitle && (
-                <div className={styles.metaRow}>
-                  <span className={styles.metaKey}>OG title</span>
-                  <span className={styles.metaVal}>{metrics.ogTitle}</span>
-                </div>
-              )}
-            </div>
-
-            {/* AI Insights */}
-            {aiResult && aiResult.insights && (
-              <>
-                <div className={styles.divider} />
-                <div className={styles.sectionLabel}>
-                  <span className={styles.sectionDot} style={{ background: 'var(--accent)' }} />
-                  AI insights
-                  <span className={styles.sectionNote}>generated by Gemini, grounded in metrics above</span>
-                </div>
-
-                <div className={styles.insightsList}>
-                  {aiResult.insights.map((ins, i) => (
-                    <div key={i} className={styles.insightCard}>
-                      <div className={styles.insightHeader}>
-                        <StatusBadge status={ins.status} />
-                        <span className={styles.insightCat}>{ins.category}</span>
-                        <span className={styles.insightHeadline}>{ins.headline}</span>
-                      </div>
-                      <p className={styles.insightText}>{ins.text}</p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className={styles.divider} />
-                <div className={styles.sectionLabel}>
-                  <span className={styles.sectionDot} style={{ background: '#60a5fa' }} />
-                  Prioritised recommendations
-                </div>
-
-                <div className={styles.recList}>
-                  {aiResult.recommendations.map((rec, i) => (
-                    <div key={i} className={styles.recItem}>
-                      <div className={styles.recNum}>{rec.priority}</div>
-                      <div className={styles.recBody}>
-                        <div className={styles.recTop}>
-                          <span className={styles.recTitle}>{rec.title}</span>
-                          <ImpactBadge impact={rec.impact} />
-                        </div>
-                        <p className={styles.recText}>{rec.text}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
-
-            {/* Prompt Log */}
-            {promptLog && (
-              <>
-                <div className={styles.divider} />
-                <div className={styles.sectionLabel}>
-                  <span className={styles.sectionDot} style={{ background: '#555' }} />
-                  Prompt log
-                  <span className={styles.sectionNote}>full AI orchestration trace</span>
-                </div>
-                <button className={styles.ghost} onClick={() => setShowLog(v => !v)}>
-                  {showLog ? '▾ Hide prompt log' : '▸ Show prompt log'}
-                </button>
-                {showLog && (
-                  <pre className={styles.logBox}>
-{`=== TIMESTAMP ===\n${promptLog.timestamp}\n\n=== SYSTEM PROMPT ===\n${promptLog.systemPrompt}\n\n=== USER PROMPT (with injected metrics) ===\n${promptLog.userPrompt}\n\n=== RAW MODEL OUTPUT ===\n${promptLog.rawResponse || '(none)'}\n${promptLog.error ? `\n=== ERROR ===\n${promptLog.error}` : ''}`}
-                  </pre>
-                )}
-              </>
-            )}
-
-          </div>
-        )}
-      </main>
-    </div>
-  )
+      )}
+    </main>
+  </div>
+)
 }
