@@ -28,7 +28,13 @@ export default async function handler(req, res) {
     const proxyData = await proxyResponse.json();
     if (!proxyData.contents) throw new Error('No content from proxy');
 
-    return res.json({ success: true, html: proxyData.contents, url, viaProxy: true });
+    // Reject non-HTML proxy responses (e.g. error pages returned as plain text)
+    const contents = proxyData.contents;
+    if (!contents.trim().startsWith('<')) {
+      throw new Error('The site may block cross-origin requests.');
+    }
+
+    return res.json({ success: true, html: contents, url, viaProxy: true });
 
   } catch (error) {
     return res.status(500).json({

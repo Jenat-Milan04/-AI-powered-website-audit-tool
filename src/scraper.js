@@ -13,8 +13,9 @@ export async function fetchHTML(url) {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.details || `HTTP ${response.status}`);
+      let msg = `HTTP ${response.status}`;
+      try { const e = await response.json(); msg = e.details || e.error || msg; } catch (_) {}
+      throw new Error(msg);
     }
 
     const data = await response.json();
