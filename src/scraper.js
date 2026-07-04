@@ -4,7 +4,7 @@ const API_BASE = import.meta.env.VITE_BACKEND_URL || '';
 export async function fetchHTML(url) {
   try {
     // Call the deployed backend on Render
-    const response = await fetch(`${API_BASE}/fetch-page`, {
+    const response = await fetch(`${API_BASE}/api/fetch-page`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

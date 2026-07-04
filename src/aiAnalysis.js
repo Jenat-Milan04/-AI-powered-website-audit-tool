@@ -105,7 +105,7 @@ export async function runAIAnalysis(metrics) {
     
     console.log('Sending request to backend:', `${BACKEND_URL}/analyze`);
     
-    const res = await fetch(`${BACKEND_URL}/analyze`, {
+    const res = await fetch(`${BACKEND_URL}/api/analyze`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
