@@ -1,3 +1,5 @@
+export const config = { api: { bodyParser: true } };
+
 function repairJSON(jsonString) {
   try {
     return JSON.parse(jsonString);
@@ -26,7 +28,7 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { systemPrompt, userPrompt } = req.body;
+  const { systemPrompt, userPrompt } = req.body || {};
   if (!systemPrompt || !userPrompt) return res.status(400).json({ error: 'Missing required fields' });
   if (!process.env.GEMINI_API_KEY) return res.status(500).json({ error: 'API key not configured' });
 
@@ -65,7 +67,6 @@ export default async function handler(req, res) {
       return res.status(500).json({
         error: 'Failed to parse AI response',
         details: parseError.message,
-        rawText: rawText.substring(0, 500),
         fallback: {
           summary: 'Partial analysis available',
           score: 50,
@@ -75,6 +76,6 @@ export default async function handler(req, res) {
       });
     }
   } catch (err) {
-    res.status(500).json({ error: 'Internal server error', details: err.message });
+    return res.status(500).json({ error: 'Internal server error', details: err.message });
   }
 }
