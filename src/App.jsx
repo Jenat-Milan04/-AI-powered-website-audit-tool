@@ -37,16 +37,11 @@ export default function App() {
   const [promptLog, setPromptLog] = useState(null)
   const [error, setError] = useState('')
   const [showLog, setShowLog] = useState(false)
-  const [backendStatus, setBackendStatus] = useState(null)
   const [showSplash, setShowSplash] = useState(true)
 
   useEffect(() => {
     const timer = setTimeout(() => setShowSplash(false), 2000)
     return () => clearTimeout(timer)
-  }, [])
-
-  useEffect(() => {
-    setBackendStatus('connected')
   }, [])
 
   async function handleAudit() {
@@ -137,16 +132,12 @@ export default function App() {
               <button
                 className={styles.auditBtn}
                 onClick={handleAudit}
-                disabled={['fetching', 'extracting', 'analyzing'].includes(step) || backendStatus === 'disconnected'}
+                disabled={['fetching', 'extracting', 'analyzing'].includes(step)}
               >
                 {['fetching', 'extracting', 'analyzing'].includes(step) ? 'Auditing...' : 'Run audit →'}
               </button>
             </div>
-            {backendStatus === 'disconnected' && (
-              <div className={styles.warningBox}>
-                ⚠️ Backend server not running. Please run <code>node server.js</code> in another terminal.
-              </div>
-            )}
+
           </div>
 
           {stepLabel && (
