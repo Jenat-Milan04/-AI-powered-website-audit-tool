@@ -12,7 +12,7 @@ app.get("/health", (req, res) => {
 });
 
 // Proxy endpoint to fetch websites (bypasses CORS)
-app.post("/fetch-page", async (req, res) => {
+app.post(["/fetch-page", "/api/fetch-page"], async (req, res) => {
   const { url } = req.body;
 
   if (!url) {
@@ -101,7 +101,7 @@ function repairJSON(jsonString) {
   }
 }
 
-app.post("/analyze", async (req, res) => {
+app.post(["/analyze", "/api/analyze"], async (req, res) => {
   const { systemPrompt, userPrompt } = req.body;
 
   if (!systemPrompt || !userPrompt) {
