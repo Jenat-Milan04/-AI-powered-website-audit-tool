@@ -101,7 +101,7 @@ export async function runAIAnalysis(metrics) {
   }
 
   try {
-    const BACKEND_URL = 'https://ai-powered-website-audit-tool.onrender.com';
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || '';
     
     console.log('Sending request to backend:', `${BACKEND_URL}/analyze`);
     

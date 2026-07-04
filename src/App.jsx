@@ -46,7 +46,7 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    fetch('https://ai-powered-website-audit-tool.onrender.com/health')
+    fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/api/fetch-page`, { method: 'OPTIONS' })
       .then(r => setBackendStatus(r.ok ? 'connected' : 'error'))
       .catch(() => setBackendStatus('disconnected'))
   }, [])

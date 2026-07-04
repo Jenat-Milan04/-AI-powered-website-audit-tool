@@ -1,8 +1,5 @@
-// scraper.js - Updated to use backend proxy
-
 // src/scraper.js
-// src/scraper.js
-const API_BASE = "https://ai-powered-website-audit-tool.onrender.com"; // <-- Replace with your Render URL
+const API_BASE = import.meta.env.VITE_BACKEND_URL || '';
 
 export async function fetchHTML(url) {
   try {
